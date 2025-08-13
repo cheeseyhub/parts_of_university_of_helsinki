@@ -14,6 +14,8 @@ export const updateVote = (id) => {
   return getAnecdotes().then((anecdotes) => {
     const anecdote = anecdotes.find((a) => a.id === id);
     const updatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 };
-    return axios.put(`${baseURL}/${id}`, updatedAnecdote).then((res) => res.data);
-  })
-}
+    return axios
+      .put(`${baseURL}/${id}`, updatedAnecdote)
+      .then((res) => res.data);
+  });
+};
