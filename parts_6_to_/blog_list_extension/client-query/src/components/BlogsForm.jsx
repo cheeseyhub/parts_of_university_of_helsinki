@@ -1,25 +1,11 @@
 import Blog from "./Blog";
 import Toggalable from "./Toggalable";
-import blogService from "../services/blogs";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import UserContext from "../contexts/userContext";
 
-function logout() {
-  window.localStorage.clear();
-  window.location.reload();
-}
-/* Handle incrementingLike */
-const incrementingLike = async (setBlogLikes, blogLikes, id, blog) => {
-  const updatedBlog = { ...blog, likes: (blogLikes || 0) + 1 };
-  delete updatedBlog.user;
-  setBlogLikes((prevLikes) => prevLikes + 1);
-  await blogService.update(id, { ...updatedBlog });
-};
-
-/* Handle incrementingLike */
 const BlogsForm = ({
-  successMessage,
-  errorMessage,
-  user,
+  status,
+  message,
   handleCreatingBlog,
   blogs,
   blogFormRef,
@@ -27,10 +13,14 @@ const BlogsForm = ({
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [user, userDispatch] = useContext(UserContext);
+  function logout() {
+    userDispatch({ type: "CLEAR_USER" });
+  }
   return (
     <section>
       {/* sucess message display */}
-      {successMessage && (
+      {status === "Success" && (
         <article>
           <h1
             className="message"
@@ -41,12 +31,12 @@ const BlogsForm = ({
               padding: "15px",
             }}
           >
-            {`${successMessage}`}
+            {`${message}`}
           </h1>
         </article>
       )}
       {/* Error message display */}
-      {errorMessage && (
+      {status === "Error" && (
         <article>
           <h1
             style={{
@@ -56,7 +46,7 @@ const BlogsForm = ({
               padding: "15px",
             }}
           >
-            {`${errorMessage}`}
+            {`${message}`}
           </h1>
         </article>
       )}
@@ -114,7 +104,7 @@ const BlogsForm = ({
       </Toggalable>
       <h2>blogs</h2>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} incrementingLike={incrementingLike} />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </section>
   );

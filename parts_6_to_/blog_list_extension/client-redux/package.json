@@ -13,12 +13,14 @@
     "start:test": "NODE_ENV=test node index.js"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.4.0",
     "cors": "^2.8.5",
     "playwright": "^1.51.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.0",

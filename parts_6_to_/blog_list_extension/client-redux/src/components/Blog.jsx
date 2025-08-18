@@ -1,17 +1,20 @@
 import { useState } from "react";
-import blogService from "../services/blogs";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteBlog } from "../reducers/blogSlice";
 
 /*Handle Removing blogs function */
-const handleRemoveBlog = async (blog) => {
+const handleRemoveBlog = async (dispatch, blog) => {
   if (confirm(`Do you want to remove ${blog.title} blog`)) {
-    await blogService.removeBlog(blog.id);
+    dispatch(deleteBlog(blog.id));
   }
 };
 /*Handle Removing blogs function */
 
 const Blog = ({ blog, incrementingLike }) => {
-  let [blogLikes, setBlogLikes] = useState(blog.likes);
+  const blogLikes = blog.likes;
+  const dispatch = useDispatch();
 
+  let loggedInUser = useSelector((state) => state.user).username;
   const [detailOfBlog, setDetailOfBlog] = useState(false);
   const blogStyle = {
     border: "2px solid black",
@@ -19,9 +22,6 @@ const Blog = ({ blog, incrementingLike }) => {
     margin: "0.5rem 0",
   };
   const checkAuthorization = () => {
-    const loggedInUser = JSON.parse(
-      localStorage.getItem("LoggedBlogUser")
-    ).username;
     if (blog.user.username === loggedInUser) {
       return true;
     }
@@ -42,7 +42,7 @@ const Blog = ({ blog, incrementingLike }) => {
           <span className="Likes">{blogLikes}</span>&nbsp;
           <button
             onClick={() => {
-              incrementingLike(setBlogLikes, blogLikes, blog.id, blog);
+              incrementingLike(blog);
             }}
           >
             Like
@@ -54,7 +54,7 @@ const Blog = ({ blog, incrementingLike }) => {
           <br />
           {checkAuthorization() && (
             <button
-              onClick={() => handleRemoveBlog(blog)}
+              onClick={() => handleRemoveBlog(dispatch, blog)}
               style={{ padding: "0.2rem" }}
             >
               Remove
