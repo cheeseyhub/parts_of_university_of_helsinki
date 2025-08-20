@@ -31,6 +31,12 @@ const BlogInfo = () => {
 
   const addCommentMutation = useMutation({
     mutationFn: blogService.comment,
+    onSuccess: (updatedBlog) => {
+      queryClient.invalidateQueries(["blogs"]);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
   });
 
   if (isPending) {
@@ -58,9 +64,13 @@ const BlogInfo = () => {
     return false;
   };
   function addComment() {
-    console.log(blog);
-    const updatedBlog = blog.comments.push(commentState);
-    addCommentMutation.mutate({ id, updatedBlog });
+    if (commentState === "") {
+      return;
+    }
+    let updatedBlog = { ...blog };
+    updatedBlog.comments.push(commentState);
+    addCommentMutation.mutate(updatedBlog);
+    setComment("");
   }
 
   return (
@@ -103,8 +113,10 @@ const BlogInfo = () => {
         />
         <button onClick={addComment}>Comment</button>
         <ul>
-          {blog.comments ? (
-            blog.comments.forEach((comment) => <li>{comment}</li>)
+          {blog.comments.length !== 0 ? (
+            blog.comments.map((comment, index) => {
+              return <li key={index}>{comment}</li>;
+            })
           ) : (
             <li>No Comments</li>
           )}

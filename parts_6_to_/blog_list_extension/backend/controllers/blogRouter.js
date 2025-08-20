@@ -67,15 +67,20 @@ blogRouter.delete(
   }
 );
 blogRouter.put("/:id/comment", async (request, response, next) => {
-  const updateOfBlog = { ...request.body };
-  const blog = await Blog.findByIdAndUpdate(request.params.id, updateOfBlog, {
-    new: true,
-    runValidators: true,
-  });
+  const comments = request.body.comments;
+  const blog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { $set: { comments: comments } },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   if (!blog) {
     return response.status(404).json({ error: "Blog not found." });
   }
-  response.status(200).json({ blog });
+
+  return response.status(200).json(blog);
 });
 
 module.exports = blogRouter;
