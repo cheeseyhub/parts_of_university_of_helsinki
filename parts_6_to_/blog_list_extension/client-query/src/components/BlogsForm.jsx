@@ -1,26 +1,56 @@
+import { Link } from "react-router-dom";
 import Blog from "./Blog";
 import Toggalable from "./Toggalable";
-import { useContext, useState } from "react";
-import UserContext from "../contexts/userContext";
-
-const BlogsForm = ({
-  status,
-  message,
-  handleCreatingBlog,
-  blogs,
-  blogFormRef,
-}) => {
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import NotificationContext from "../contexts/notificationContext";
+import { useState, useContext } from "react";
+import blogService from "../services/blogs";
+const BlogsForm = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
-  const [user, userDispatch] = useContext(UserContext);
-  function logout() {
-    userDispatch({ type: "CLEAR_USER" });
+  const queryClient = useQueryClient();
+  const [notificationState, notificationDispatch] =
+    useContext(NotificationContext);
+  const { data } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: blogService.getAll,
+  });
+  const blogs = data;
+
+  const blogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData(["blogs"]);
+      queryClient.setQueryData(["blogs"], [...blogs, newBlog]);
+      notificationDispatch({
+        type: "SET",
+        payload: `A new blog ${newBlog.title} by ${newBlog.author} added`,
+      });
+      setTimeout(() => {
+        notificationDispatch({ type: "CLEAR" });
+      }, 5000);
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+    },
+    onError: (error) => {
+      notificationDispatch({ type: "ERROR", payload: error.message });
+      setTimeout(() => {
+        notificationDispatch({ type: "CLEAR" });
+      }, 5000);
+    },
+  });
+  //New Blog properties
+  function handleCreatingBlog(event, title, author, url) {
+    event.preventDefault();
+    blogMutation.mutate({ title, author, url });
   }
+
   return (
     <section>
       {/* sucess message display */}
-      {status === "Success" && (
+      {notificationState.includes("Success") && (
         <article>
           <h1
             className="message"
@@ -31,12 +61,12 @@ const BlogsForm = ({
               padding: "15px",
             }}
           >
-            {`${message}`}
+            {`${notificationState}`}
           </h1>
         </article>
       )}
       {/* Error message display */}
-      {status === "Error" && (
+      {notificationState.includes("Error") && (
         <article>
           <h1
             style={{
@@ -46,14 +76,12 @@ const BlogsForm = ({
               padding: "15px",
             }}
           >
-            {`${message}`}
+            {`${notificationState}`}
           </h1>
         </article>
       )}
-      <h1>Logged in {`${user.username}`}</h1>
-      <button onClick={logout}>Logout</button>
       <h3>Create a new Blog</h3>
-      <Toggalable buttonLabel="New Blog" ref={blogFormRef}>
+      <Toggalable buttonLabel="New Blog">
         <form
           onSubmit={(event) => handleCreatingBlog(event, title, author, url)}
         >
@@ -103,9 +131,13 @@ const BlogsForm = ({
         </form>
       </Toggalable>
       <h2>blogs</h2>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      {blogs &&
+        blogs.map((blog) => (
+          <Link key={blog.id} to={`/blogs/${blog.id}`}>
+            {" "}
+            <Blog blog={blog} />
+          </Link>
+        ))}
     </section>
   );
 };

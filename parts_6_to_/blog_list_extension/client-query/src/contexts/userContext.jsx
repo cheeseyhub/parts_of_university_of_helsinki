@@ -11,6 +11,7 @@ const userReducer = (state = null, action) => {
     case "GET_USER":
       const userInStorage = window.localStorage.getItem("LoggedBlogUser");
       return JSON.parse(userInStorage);
+
     case "CLEAR_USER":
       window.localStorage.clear();
       window.location.reload();
@@ -21,7 +22,10 @@ const userReducer = (state = null, action) => {
 const UserContext = createContext();
 
 export const UserContextProvider = (props) => {
-  const [user, userDispatch] = useReducer(userReducer, null);
+  const [user, userDispatch] = useReducer(
+    userReducer,
+    JSON.parse(localStorage.getItem("LoggedBlogUser"))
+  );
 
   return (
     <UserContext.Provider value={[user, userDispatch]}>

@@ -1,16 +1,55 @@
-import PropTypes from "prop-types";
-const LoginForm = ({
-  errorMessage,
-  handleLogin,
-  setUsername,
-  setPassword,
-  username,
-  password,
-}) => {
+import { useState, useEffect, useContext } from "react";
+import loginService from "../services/login";
+import NotificationContext from "../contexts/notificationContext";
+import UserContext from "../contexts/userContext";
+import blogService from "../services/blogs";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+const LoginForm = () => {
+  const [notificationState, notificationDispatch] =
+    useContext(NotificationContext);
+  const navigate = useNavigate();
+  //Login credentials
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, userDispatch] = useContext(UserContext);
+  useEffect(() => {
+    userDispatch({ type: "GET_USER" });
+    if (user) {
+      blogService.setToken(user.token);
+    }
+  }, []);
+  const userMutation = useMutation({
+    mutationFn: loginService.Login,
+    onSuccess: (loggedInUser) => {
+      userDispatch({ type: "SET_USER", payload: loggedInUser });
+      blogService.setToken(loggedInUser.token);
+      setUsername("");
+      setPassword("");
+      notificationDispatch({
+        type: "SET",
+        payload: `${username} has logged in.`,
+      });
+      setTimeout(() => {
+        notificationDispatch({ type: "CLEAR" });
+      }, 5000);
+      navigate("/");
+    },
+    onError: (error) => {
+      notificationDispatch({ type: "ERROR", payload: error.message + "Error" });
+      setTimeout(() => {
+        notificationDispatch({ type: "CLEAR" });
+      }, 5000);
+    },
+  });
+  async function handleLogin(event) {
+    event.preventDefault();
+    return userMutation.mutate({ username, password });
+  }
   return (
     <section>
       {/* Error message display */}
-      {errorMessage && (
+      {notificationState.includes("Error") && (
         <article>
           <h1
             style={{
@@ -20,7 +59,7 @@ const LoginForm = ({
               padding: "15px",
             }}
           >
-            {`${errorMessage}`}
+            {`${notificationState}`}
           </h1>
         </article>
       )}
@@ -55,12 +94,5 @@ const LoginForm = ({
       </form>
     </section>
   );
-};
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  setPassword: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
-  password: PropTypes.string.isRequired,
 };
 export default LoginForm;

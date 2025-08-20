@@ -1,8 +1,5 @@
 const blogRouter = require("express").Router();
-const { overwriteMiddlewareResult } = require("mongoose");
 const Blog = require("../models/blog");
-const User = require("../models/user");
-const jwt = require("jsonwebtoken");
 const middlewares = require("../utils/middlewares");
 
 blogRouter.get("/", async (request, response) => {
@@ -69,5 +66,16 @@ blogRouter.delete(
     return response.status(204).end();
   }
 );
+blogRouter.put("/:id/comment", async (request, response, next) => {
+  const updateOfBlog = { ...request.body };
+  const blog = await Blog.findByIdAndUpdate(request.params.id, updateOfBlog, {
+    new: true,
+    runValidators: true,
+  });
+  if (!blog) {
+    return response.status(404).json({ error: "Blog not found." });
+  }
+  response.status(200).json({ blog });
+});
 
 module.exports = blogRouter;
