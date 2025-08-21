@@ -73,6 +73,7 @@ const LoginForm = () => {
             name="username"
             id="username"
             value={username}
+            className="form-control"
             placeholder="username"
             onChange={({ target }) => setUsername(target.value)}
           />
@@ -84,13 +85,16 @@ const LoginForm = () => {
             type="text"
             name="password"
             id="password"
+            className="form-control"
             placeholder="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
         </article>
         <br />
-        <button type="submit">Login</button>
+        <button type="submit" className="btn btn-success">
+          Login
+        </button>
       </form>
     </section>
   );

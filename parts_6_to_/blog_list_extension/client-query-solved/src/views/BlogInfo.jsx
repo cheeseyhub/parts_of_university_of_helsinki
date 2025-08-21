@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
-import blogService from "../src/services/blogs";
+import blogService from "../services/blogs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useContext, useState } from "react";
-import UserContext from "../src/contexts/userContext";
+import UserContext from "../contexts/userContext";
 const BlogInfo = () => {
   const [user, userDispatch] = useContext(UserContext);
   const { id } = useParams();

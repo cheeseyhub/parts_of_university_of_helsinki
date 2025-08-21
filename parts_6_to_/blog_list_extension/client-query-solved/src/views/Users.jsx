@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import userService from "../src/services/users.js";
+import userService from "../services/users.js";
 import { Link } from "react-router-dom";
 const UsersPage = () => {
   const { data } = useQuery({
@@ -11,11 +11,11 @@ const UsersPage = () => {
     <div>
       <section>
         <h2>Users</h2>
-        <table>
+        <table className="table table-striped table-hover table-bordered table-sm">
           <thead>
-            <tr>
-              <th>User</th>
-              <th>Blog Created</th>
+            <tr className="table-dark">
+              <th scope="col">User</th>
+              <th scope="col">Blogs Created</th>
             </tr>
           </thead>
           <tbody>

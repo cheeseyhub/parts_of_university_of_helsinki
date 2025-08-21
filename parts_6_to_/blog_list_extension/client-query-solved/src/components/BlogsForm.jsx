@@ -133,7 +133,11 @@ const BlogsForm = () => {
       <h2>blogs</h2>
       {blogs &&
         blogs.map((blog) => (
-          <Link key={blog.id} to={`/blogs/${blog.id}`}>
+          <Link
+            className="   text-primary text-decoration-none"
+            key={blog.id}
+            to={`/blogs/${blog.id}`}
+          >
             {" "}
             <Blog blog={blog} />
           </Link>

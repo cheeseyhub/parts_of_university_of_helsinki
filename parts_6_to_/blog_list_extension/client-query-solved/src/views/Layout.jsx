@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import UserContext from "../src/contexts/userContext";
-import blogService from "../src/services/blogs";
+import UserContext from "../contexts/userContext";
+import blogService from "../services/blogs";
 
 const Layout = () => {
   const [user, userDispatch] = useContext(UserContext);

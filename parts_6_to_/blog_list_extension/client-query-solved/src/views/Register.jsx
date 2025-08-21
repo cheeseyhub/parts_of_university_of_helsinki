@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import userService from "../src/services/users";
+import userService from "../services/users";
 import { useNavigate } from "react-router-dom";
 const Register = () => {
   const [username, setUsername] = useState("");

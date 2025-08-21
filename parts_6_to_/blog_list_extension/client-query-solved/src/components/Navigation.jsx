@@ -2,33 +2,25 @@ import { Link } from "react-router-dom";
 import UserContext from "../contexts/userContext";
 import { useContext } from "react";
 
-const linkStyle = {
-  fontWeight: "bolder",
-  fontSize: "large",
-  textDecoration: "none",
-  border: "1px solid black",
-  padding: "0.2rem",
-  margin: "0 5px",
-};
 const Navigation = () => {
   const [user, userDipatch] = useContext(UserContext);
   return (
     <div>
-      <section>
-        <Link to="/" style={linkStyle}>
+      <section className="mt-4">
+        <Link to="/" className="btn btn-primary me-2">
           Home
         </Link>
 
-        <Link to="/users" style={linkStyle}>
+        <Link to="/users" className="btn btn-primary me-2">
           Users
         </Link>
         {user && (
-          <Link to={`/users/${user.id}`} style={linkStyle}>
+          <Link to={`/users/${user.id}`} className="btn btn-primary me-2">
             Your Blogs.
           </Link>
         )}
         {!user && (
-          <Link to="/Login" style={linkStyle}>
+          <Link to="/Login" className="btn btn-primary me-2">
             Login
           </Link>
         )}
